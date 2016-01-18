@@ -24,5 +24,5 @@ script:
   - 'sudo docker exec --tty "${container_id}" env ${env_args} /run/ansible-bootstrap.sh'
   - 'sudo docker exec --tty "${container_id}" ansible-playbook --version'
   - 'sudo docker exec --tty "${container_id}" /run/ansible-bootstrap.sh uninstall'
-  - 'sudo docker stop "$(cat ${container_id})"'
+  - sudo docker stop ${container_id}
 

@@ -4,7 +4,6 @@ sudo: required
 
 env:
   global:
-    init: /sbin/init
     image_tag: ansible-bootstrap
     env_args: "ANSIBLE_VERSION=1.9.4"
   matrix:
@@ -21,9 +20,9 @@ before_install:
   - 'sudo docker build --rm=true --file=tests/Dockerfile.${distro}-${vers} --tag=${distro}-${vers}:${image_tag} tests'
 
 script:
-  - container_id=$(mktemp)
-  - 'sudo docker run --detach --volume="${PWD}":/run ${run_opts} ${distribution}-${version}:ansible "${init}" > "${container_id}"'
-  - 'sudo docker exec --tty "$(cat ${container_id})" env ${env_args} /run/ansible-bootstrap.sh'
-  - 'sudo docker exec --tty "$(cat ${container_id})" ansible-playbook --version'
+  - container_id=$(sudo docker run --detach --volume="${PWD}":/run ${distro}-${vers}:${image_tag}")
+  - 'sudo docker exec --tty "${container_id}" env ${env_args} /run/ansible-bootstrap.sh'
+  - 'sudo docker exec --tty "${container_id}" ansible-playbook --version'
+  - 'sudo docker exec --tty "${container_id}" /run/ansible-bootstrap.sh uninstall'
   - 'sudo docker stop "$(cat ${container_id})"'
 

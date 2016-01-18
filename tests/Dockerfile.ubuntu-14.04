@@ -3,4 +3,4 @@ FROM ubuntu:14.04
 RUN mkdir -p /run
 VOLUME /run
 
-CMD ["/usr/sbin/init"]
+CMD ["/sbin/init"]

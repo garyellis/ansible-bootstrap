@@ -1,0 +1,9 @@
+FROM centos:6
+
+RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers
+
+RUN mkdir -p /run
+ADD ../bootstrap-ansible.sh /run
+RUN /run/ansible-bootstrap.sh
+
+CMD ["/usr/sbin/init"]

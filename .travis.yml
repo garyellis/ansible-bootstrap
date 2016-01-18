@@ -1,0 +1,26 @@
+---
+# disable container based infrastructure - image build and run are in before install and script steps (in vm)
+sudo: required
+
+env:
+  global:
+    init: /sbin/init
+    image_tag: ansible-bootstrap
+  matrix:
+    - distro: centos
+      vers: 6
+      build_args: ANSIBLE_VERSION=1.9.4
+      run_args: ""
+      init: /sbin/init
+
+services:
+  - docker
+
+before_install:
+  - 'sudo docker build --build-arg ${build_args} --rm=true --file=tests/Dockerfile.${distro}-${vers} --tag=${distro}-${vers}:${image_tag} tests'
+
+script:
+  - container_id=$(mktemp)
+  - 'sudo docker run -d ${run_args} ${distro}-${vers}:${image_tag} ${init} > "${container_id}"'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook --version'
+  - 'sudo docker stop "$(cat ${container_id})"'

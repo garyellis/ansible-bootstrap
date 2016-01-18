@@ -9,7 +9,7 @@ env:
   matrix:
     - distro: centos
       vers: 6
-      build_args: ANSIBLE_VERSION=1.9.4
+      build_arg: "ANSIBLE_VERSION=1.9.4"
       run_args: ""
       init: /sbin/init
 
@@ -17,7 +17,7 @@ services:
   - docker
 
 before_install:
-  - 'sudo docker build --build-arg ${build_args} --rm=true --file=tests/Dockerfile.${distro}-${vers} --tag=${distro}-${vers}:${image_tag} tests'
+  - 'sudo docker build --build-arg ${build_arg} --rm=true --file=tests/Dockerfile.${distro}-${vers} --tag=${distro}-${vers}:${image_tag} tests'
 
 script:
   - container_id=$(mktemp)

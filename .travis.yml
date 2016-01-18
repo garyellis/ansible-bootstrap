@@ -20,7 +20,7 @@ before_install:
   - docker build --rm=true --file=tests/Dockerfile.${distro}-${vers} --tag=${distro}-${vers}:${image_tag} tests
 
 script:
-  - container_id=$(sudo docker run --detach --volume="${PWD}":/run ${distro}-${vers}:${image_tag})
+  - container_id=$(docker run --detach --volume="${PWD}":/run ${distro}-${vers}:${image_tag})
   - docker exec --tty ${container_id} env ${env_args} /run/ansible-bootstrap.sh
   - docker exec --tty ${container_id} ansible-playbook --version
   - docker exec --tty ${container_id} /run/ansible-bootstrap.sh uninstall

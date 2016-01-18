@@ -6,22 +6,24 @@ env:
   global:
     init: /sbin/init
     image_tag: ansible-bootstrap
+    env_args: "ANSIBLE_VERSION=1.9.4"
   matrix:
     - distro: centos
       vers: 6
-      build_arg: "ANSIBLE_VERSION=1.9.4"
-      run_args: ""
-      init: /sbin/init
+    - distro: ubuntu
+      vers: 14.04
+
 
 services:
   - docker
 
 before_install:
-  - 'sudo docker build --build-arg ${build_arg} --rm=true --file=tests/Dockerfile.${distro}-${vers} --tag=${distro}-${vers}:${image_tag} tests'
+  - 'sudo docker build --rm=true --file=tests/Dockerfile.${distro}-${vers} --tag=${distro}-${vers}:${image_tag} tests'
 
 script:
   - container_id=$(mktemp)
-  - 'sudo docker run -d ${run_args} ${distro}-${vers}:${image_tag} ${init} > "${container_id}"'
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook --version'
+  - 'sudo docker run --detach --volume="${PWD}":/run ${run_opts} ${distribution}-${version}:ansible "${init}" > "${container_id}"'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env ${env_args} /run/ansible-bootstrap.sh'
+  - 'sudo docker exec --tty "$(cat ${container_id})" ansible-playbook --version'
   - 'sudo docker stop "$(cat ${container_id})"'
 

@@ -44,7 +44,7 @@ install_ansible_module_deps_centos(){
     ansible_package_deps=(libselinux-python \
                           unzip \
                           findutils)
-
+    yum -y remove pycrypto
     yum -y --quiet install ${ansible_package_deps[@]}
 }
 
